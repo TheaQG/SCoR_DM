@@ -99,12 +99,6 @@ For training the model, you can use the scripts in the `scripts/model_runs` dire
 │   │   └── era5_pressure_pipeline.yaml
 │   ├── cli
 │   │   ├── __init__.py
-│   │   ├── __pycache__
-│   │   │   ├── __init__.cpython-311.pyc
-│   │   │   ├── __init__.cpython-39.pyc
-│   │   │   ├── run_local_pressure.cpython-311.pyc
-│   │   │   ├── run_local.cpython-311.pyc
-│   │   │   └── run_local.cpython-39.pyc
 │   │   ├── run_local_pressure.py
 │   │   ├── run_local.py
 │   │   └── run_lumi.py
@@ -113,19 +107,6 @@ For training the model, you can use the scripts in the `scripts/model_runs` dire
 │   │   └── era5_run_restartable.log
 │   ├── pipeline
 │   │   ├── __init__.py
-│   │   ├── __pycache__
-│   │   │   ├── __init__.cpython-311.pyc
-│   │   │   ├── __init__.cpython-39.pyc
-│   │   │   ├── download.cpython-311.pyc
-│   │   │   ├── download.cpython-39.pyc
-│   │   │   ├── remote_utils.cpython-311.pyc
-│   │   │   ├── remote_utils.cpython-39.pyc
-│   │   │   ├── stream.cpython-311.pyc
-│   │   │   ├── stream.cpython-39.pyc
-│   │   │   ├── transfer.cpython-311.pyc
-│   │   │   ├── transfer.cpython-39.pyc
-│   │   │   ├── utils.cpython-311.pyc
-│   │   │   └── utils.cpython-39.pyc
 │   │   ├── cdo_utils.py
 │   │   ├── download.py
 │   │   ├── remote_utils.py
@@ -139,32 +120,14 @@ For training the model, you can use the scripts in the `scripts/model_runs` dire
 │   │   └── rename_zpl.sh
 │   └── utils
 │       ├── __init__.py
-│       ├── __pycache__
-│       │   └── logging_utils.cpython-311.pyc
 │       └── logging_utils.py
 ├── models_and_samples
 ├── README.md
 ├── requirements.txt
-└── scor-dm
+└── scor_dm
     ├── __init__.py
-    ├── __pycache__
-    │   ├── __init__.cpython-311.pyc
-    │   ├── data_modules.cpython-311.pyc
-    │   ├── generation.cpython-311.pyc
-    │   ├── score_sampling.cpython-311.pyc
-    │   ├── score_unet.cpython-311.pyc
-    │   ├── special_transforms.cpython-311.pyc
-    │   ├── training_main.cpython-311.pyc
-    │   ├── training_utils.cpython-311.pyc
-    │   ├── training.cpython-311.pyc
-    │   └── utils.cpython-311.pyc
     ├── cli
     │   ├── __init__.py
-    │   ├── __pycache__
-    │   │   ├── __init__.cpython-311.pyc
-    │   │   ├── launch_generation.cpython-311.pyc
-    │   │   ├── launch_sbgm.cpython-311.pyc
-    │   │   └── main_app.cpython-311.pyc
     │   ├── launch_evaluation_sampler_grid.py
     │   ├── launch_evaluation_sigma_star.py
     │   ├── launch_evaluation.py
@@ -176,29 +139,9 @@ For training the model, you can use the scripts in the `scripts/model_runs` dire
     │   └── main_app.py
     ├── config
     │   ├── __init__.py
-    │   ├── ablation_config.yaml
-    │   ├── ablation_geo_config.yaml
-    │   ├── ablation_RainGate_config.yaml
+    │   ├── ..
     │   ├── ablations
-    │   │   └── ablation_basic.yaml
-    │   ├── default_config.yaml
-    │   ├── evaluation_main.yaml
-    │   ├── full_run_all_data_config.yaml
-    │   ├── full_run_config_debug.yaml
-    │   ├── full_run_config_new.yaml
-    │   ├── full_run_config.yaml
-    │   ├── golden_config.yaml
-    │   ├── new_eval_setup_test.yaml
-    │   ├── paper1_baselines.yaml
-    │   ├── paper1_expA.yaml
-    │   ├── paper1_final_run_config.yaml
-    │   ├── paper1_main_Gen.yaml
-    │   ├── paper1_main.yaml
-    │   ├── paper1_mainGenEval.yaml
-    │   ├── paper1_mainRG.yaml
-    │   └── sweep_spaces
-    │       ├── ablation_dropout.yaml
-    │       └── sbgm_baseline.yaml
+    │   │   └── ..
     ├── data
     │   ├── __init__.py
     │   ├── create_train_valid_test.py
@@ -218,45 +161,21 @@ For training the model, you can use the scripts in the `scripts/model_runs` dire
     │   │   │   ├── metrics_dates.py
     │   │   │   └── plot_dates.py
     │   │   ├── eval_distributions
-    │   │   │   ├── __init__.py
-    │   │   │   ├── evaluate_distributions.py
-    │   │   │   ├── metrics_distributions.py
-    │   │   │   └── plot_distributions.py
+    │   │   │   ├── ...
     │   │   ├── eval_extremes
-    │   │   │   ├── __init__.py
-    │   │   │   ├── evaluate_extremes.py
-    │   │   │   ├── metrics_extremes.py
-    │   │   │   └── plot_extremes.py
+    │   │   │   ├── ...
     │   │   ├── eval_features
-    │   │   │   ├── __init__.py
-    │   │   │   ├── evaluate_features.py
-    │   │   │   ├── metrics_features.py
-    │   │   │   └── plot_features.py
+    │   │   │   ├── ...
     │   │   ├── eval_probabilistic
-    │   │   │   ├── __init__.py
-    │   │   │   ├── evaluate_probabilistic.py
-    │   │   │   ├── metrics_probabilistic.py
-    │   │   │   └── plot_probabilistic.py
+    │   │   │   ├── ...
     │   │   ├── eval_scale
-    │   │   │   ├── __init__.py
-    │   │   │   ├── evaluate_scale.py
-    │   │   │   ├── metrics_scale.py
-    │   │   │   └── plot_scale.py
+    │   │   │   ├── ...
     │   │   ├── eval_sigma_star
-    │   │   │   ├── __init__.py
-    │   │   │   ├── evaluate_sigma_control.py
-    │   │   │   ├── metrics_sigma_control.py
-    │   │   │   └── plot_sigma_control.py
+    │   │   │   ├── ...
     │   │   ├── eval_spatial
-    │   │   │   ├── __init__.py
-    │   │   │   ├── evaluate_spatial.py
-    │   │   │   ├── metrics_spatial.py
-    │   │   │   └── plot_spatial.py
+    │   │   │   ├── ...
     │   │   ├── eval_temporal
-    │   │   │   ├── __init__.py
-    │   │   │   ├── evaluate_temporal.py
-    │   │   │   ├── metrics_temporal.py
-    │   │   │   └── plot_temporal.py
+    │   │   │   ├── ...
     │   │   ├── overlay_utils.py
     │   │   ├── plot_utils.py
     │   │   └── sigma_control
