@@ -1,365 +1,412 @@
-# SCoR-DM: Scale-Controllable Residual Diffusion Model
 # CEDDAR: Controllable Ensemble Diffusion Downscaling for Atmospheric Rainfall
 
-### NOTE: This project is currently under development and the code is not yet fully functional. It is intended to be used as a reference for implementing score-based generative models for downscaling climate data. This README will be updated as the project progresses.
+> **Status:** Research code accompanying an ongoing PhD project.
+> The repository is stable enough to reproduce main experiments and results, but may undergo further refinement and development.
 
+---
 
-This repository contains the code for the SBGM_DANRA project, a work on using score-based generative models for downscaling of climate data. The project is structured into several directories, each serving a specific purpose in the workflow from data preparation to model training and evaluation.
+## 1. Overview
+### **What is CEDDAR?**
+  CEDDAR (Controllable Ensemble Diffusion Downscaling for Atmospheric Rainfall) is a diffusion-based statistical downscaling framework designed to enhance the spatial resolution of precipitation data - and in the future other climate variables(/full regional climate emulation). 
+  It is built on the Elucidated Diffusion Model (EDM) setup and currently targets **precipitation** over Denmark, with ongoing work extending the framework to other variables and regions.
 
-The model downscales ERA5 [REF] data (~31 km spatial resolution) to a higher resolution corresponding to the DANRA [REF] target dataset (2.5 km spatial resolution). The model is trained with ERA5 variables as input and DANRA variables as target. The training is done using a score-based generative model, which learns to generate high-resolution climate data conditioned on low-resolution inputs. 
-Multiple models have been trained, with different LR conditions to attempt a downscaling closer to an emulator, attempting to capture dynamic meteorological processes from various variables.
+### **Problem setting**
+Global reanalysis products such as ERA5 [REFERENCE] provide large-scale atmospheric dynamic information but at spatial resolutions (~31 km at DK latitude) that are insufficient for local-scale climate impact modelling.
+High-resolution reanalyses like DANRA [REFERENCE] (2.5 km) offer more detailed spatial structure, but are costly to produce and not globally available, while only being single-realization datasets (no ensembles).
+CEDDAR aims to bridge this resolution gap by learning a generative mapping from Low-Resolution (LR) ERA5 precipitation data to High-Resolution (HR) DANRA-like fields while attempting to capture (1) fineScale spatial variability and structures, (2) extreme-event behaviour, (3) multi-scale physical structure, and (4) uncertainty quantification through daily ensembles.
 
-<!-- Examples of the generated samples can be found in the `models_and_samples/generated_samples` directory, and the trained models are stored in the `models_and_samples/trained_models` directory.
+### **Key ideas**
+- Elucidated Diffusion Model (EDM) based generative modelling for high-resolution precipitation fields
+- Residual learning framework: model learns to generate the residual between bilinearly upsampled LR input and HR target, improving learning efficiency
+- Multi-conditional inputs: geographical (topography, land-sea mask), temporal (day-of-year, time-of-day), and climatic (large-scale variables) conditions (*ongoing*)
+- Scale-controllable sampling via $\sigma$* (sigma-star) parameter, allowing control over power spectrum characteristics of generated fields at inference time
+- Ensemble generation for uncertainty quantification, enabling multiple plausible HR realizations for a given LR input
+- Comprehensive evaluation metrics suite covering distributional characteristics, extreme event statistics, spatial metrics, power spectra and temporal behaviour
 
-To run the code, you will need to set up the environment as described in the `requirements.txt` or `environment.yml` files. The project is structured to facilitate easy data handling, model training, and evaluation.
-For training the model, you can use the scripts in the `scripts/model_runs` directory. The evaluation of the model can be done using the scripts in the `scripts/evaluation` directory. -->
+## 2. Features
 
+### **Core Model**
+    - [x] Elucidated Diffusion Model (EDM) for spatial precipitation downscaling
+    - [x] Residual learning formulation
+    - [x] Multi-conditional inputs (geographical, temporal, climatic)
+    - [x] Scale-controllable sampling via $\sigma$* (sigma-star) for power spectrum control
+    - [x] Ensemble approach for uncertainty quantification
+    - [x] RainGate module for drizzle reduction and precipitation correction
 
-## Directory Structure
+### **Evaluation Suite**
+    - [x] Distributional metrics (PDF, CDF, quantiles, pixel statistics)
+    - [x] Extreme event statistics (RX1day, RX5day, R95p, R99p, (POT, GPD fitting) )
+    - [x] Spatial metrics (FSS, ISS, spatial mean/std maps, bias ratios)
+    - [x] Power spectrum analysis 
+    - [x] Temporal consistency metrics 
+    - [x] Automated evaluation pipeline with visualizations
+
+### **Data and (pre)processing pipelines**
+    - [x] ERA5 and DANRA preprocessing scripts (CDO-based)
+    - [x] Daily .nc/.npz -> .zarr conversion
+    - [x] Train/valid/test split creation
+    - [x] Statistics computation 
+    - [x] Correlation analysis across HR/LR variables
+
+### **Baseline Methods for comparison**
+    - [x] Bilinear upsampling
+    - [x] Quantile mapping (QM)
+    - [ ] UNet-SR baseline (ongoing)
+    - [x] Baseline evaluation matching the full CEDDAR suite
+
+## 3. Repository Structure
+High-level directory overview:
 ```
 .
-├── baselines
-│   ├── __init__.py
-│   ├── adapter.py
-│   ├── baseline_eval.py
-│   ├── baseline_main.py
-│   ├── bilinear.py
-│   ├── build_dataset.py
-│   ├── evaluate_baselines
-│   │   ├── eval_dataresolver_baselines.py
-│   │   ├── evaluation_baselines.py
-│   │   └── launch_baseline_evaluation.py
-│   ├── plotting.py
-│   ├── quantile_mapping.py
-│   └── unet_sr
-│       ├── __init__.py
-│       ├── model.py
-│       └── train.py
-├── bash_scripts
-├── data_analysis_pipeline
-│   ├── __init__.py
-│   ├── cli
-│   │   ├── __init__.py
-│   │   ├── launch_comparison.py
-│   │   ├── launch_correlations.py
-│   │   ├── launch_small_batches_creation.py
-│   │   ├── launch_split_creation.py
-│   │   ├── launch_statistics.py
-│   │   └── main_data_app.py
-│   ├── comparison
-│   │   ├── __init__.py
-│   │   ├── compare_distributions.py
-│   │   ├── compare_fields.py
-│   │   ├── compare_timeseries.py
-│   │   ├── comparison_main.py
-│   │   ├── comparison_pipeline.py
-│   │   └── plot_utils.py
-│   ├── configs
-│   │   ├── __init__.py
-│   │   ├── comparison_config.yaml
-│   │   ├── correlation_config.yaml
-│   │   ├── default_data_config.yaml
-│   │   ├── small_batches_config.yaml
-│   │   ├── split_config.yaml
-│   │   └── stats_config.yaml
-│   ├── correlations
-│   │   ├── correlation_main.py
-│   │   ├── correlation_methods.py
-│   │   ├── correlation_pipeline.py
-│   │   ├── correlation_plotting.py
-│   │   └── data_correlations.py
-│   ├── preprocess
-│   │   ├── __init__.py
-│   │   ├── create_small_data_batches.py
-│   │   ├── daily_files_to_zarr.py
-│   │   ├── filter_data.py
-│   │   └── small_batches_main.py
-│   ├── splits
-│   │   ├── __init__.py
-│   │   ├── create_train_valid_test.py
-│   │   └── splits_main.py
-│   └── stats_analysis
-│       ├── __init__.py
-│       ├── data_loading.py
-│       ├── data_stats_pipeline.py
-│       ├── path_utils.py
-│       ├── plotting.py
-│       ├── statistics.py
-│       └── stats_main.py
-├── data_examples
-│   ├── DANRA
-│   ├── ERA5
-│   └── figures
-├── era5_download_pipeline
-│   ├── __init__.py
-│   ├── cfg
-│   │   ├── era5_pipeline_testing.yaml
-│   │   ├── era5_pipeline.yaml
-│   │   ├── era5_pressure_pipeline_testing.yaml
-│   │   └── era5_pressure_pipeline.yaml
-│   ├── cli
-│   │   ├── __init__.py
-│   │   ├── run_local_pressure.py
-│   │   ├── run_local.py
-│   │   └── run_lumi.py
-│   ├── era5_logs
-│   │   ├── era5_download.log
-│   │   └── era5_run_restartable.log
-│   ├── pipeline
-│   │   ├── __init__.py
-│   │   ├── cdo_utils.py
-│   │   ├── download.py
-│   │   ├── remote_utils.py
-│   │   ├── stream.py
-│   │   ├── transfer.py
-│   │   └── utils.py
-│   ├── slurm
-│   │   ├── local_pressure_process.sh
-│   │   ├── local_process.sh
-│   │   ├── lumi_process.sh
-│   │   └── rename_zpl.sh
-│   └── utils
-│       ├── __init__.py
-│       └── logging_utils.py
-├── models_and_samples
-├── README.md
-├── requirements.txt
-└── scor_dm
-    ├── __init__.py
-    ├── cli
-    │   ├── __init__.py
-    │   ├── launch_evaluation_sampler_grid.py
-    │   ├── launch_evaluation_sigma_star.py
-    │   ├── launch_evaluation.py
-    │   ├── launch_generation_sampler_grid.py
-    │   ├── launch_generation_sigma_star.py
-    │   ├── launch_generation.py
-    │   ├── launch_quicklook.py
-    │   ├── launch_sbgm.py
-    │   └── main_app.py
-    ├── config
-    │   ├── __init__.py
-    │   ├── ..
-    │   ├── ablations
-    │   │   └── ..
-    ├── data
-    │   ├── __init__.py
-    │   ├── create_train_valid_test.py
-    │   └── datasets_loading.py
-    ├── data_modules.py
-    ├── evaluate
-    │   ├── __init__.py
-    │   ├── data_resolver.py
-    │   ├── evaluate_main.py
-    │   ├── evaluate_multivariate
-    │   │   └── __init__.py
-    │   ├── evaluate_prcp
-    │   │   ├── __init__.py
-    │   │   ├── eval_dates
-    │   │   │   ├── __init__.py
-    │   │   │   ├── evaluate_dates.py
-    │   │   │   ├── metrics_dates.py
-    │   │   │   └── plot_dates.py
-    │   │   ├── eval_distributions
-    │   │   │   ├── ...
-    │   │   ├── eval_extremes
-    │   │   │   ├── ...
-    │   │   ├── eval_features
-    │   │   │   ├── ...
-    │   │   ├── eval_probabilistic
-    │   │   │   ├── ...
-    │   │   ├── eval_scale
-    │   │   │   ├── ...
-    │   │   ├── eval_sigma_star
-    │   │   │   ├── ...
-    │   │   ├── eval_spatial
-    │   │   │   ├── ...
-    │   │   ├── eval_temporal
-    │   │   │   ├── ...
-    │   │   ├── overlay_utils.py
-    │   │   ├── plot_utils.py
-    │   │   └── sigma_control
-    │   ├── evaluate_prcp.zip
-    │   ├── evaluate_sampler_grid_main.py
-    │   ├── evaluate_temp
-    │   │   └── __init__.py
-    │   ├── evaluation.py
-    │   └── summarize_sampler_grid.py
-    ├── evaluate_sbgm
-    │   ├── __init__.py
-    │   ├── evaluation_main.py
-    │   ├── evaluation.py
-    │   ├── metrics_univariate.py
-    │   └── plot_utils.py
-    ├── generate
-    │   ├── generation_main.py
-    │   ├── generation_sampler_grid_main.py
-    │   ├── generation_sigma_grid_main.py
-    │   ├── generation.py
-    │   └── quicklook.py
-    ├── heads
-    │   ├── __init__.py
-    │   └── rain_gate.py
-    ├── logging_utils.py
-    ├── losses.py
-    ├── monitoring.py
-    ├── plotting_utils.py
-    ├── scale_utils.py
-    ├── score_sampling.py
-    ├── score_unet.py
-    ├── special_transforms.py
-    ├── training_main.py
-    ├── training_utils.py
-    ├── training.py
-    ├── utils.py
-    └── variable_utils.py
-
+├── baselines/                  # Baseline downscaling methods and evaluations
+├── bash_scripts/               # Example Slurm/helper scripts (LUMI/HPC)
+├── ceddar/                     # Core CEDDAR model, training, generation, evaluation code
+├── data_analysis_pipeline/     # Statistics, comparisons, correlations, preprocessing, splits
+├── data_examples/              # Tiny example data (ERA5/DANRA)
+├── era5_download_pipeline/     # ERA5 data download + CDO-based preprocessing
+├── models_and_samples/         # Pretrained models, sample outputs (optional, may be empty)
+├── notebooks/                  # Jupyter notebooks for exploratory analysis
+├── requirements.txt            # Minimal Python dependencies
+└── README.md                   # This file
 ```
 
-# SBGM_DANRA
-This directory contains the main code for the SBGM_DANRA project, including scripts for data handling, model training, and evaluation. The code is organized into several subdirectories, with a focus on modularity and reusability. The main components of the project are:
+### Component descriptions
 
-## bash_scripts
-Contains bash scripts for setting up the environment and running the project. These scripts help automate the setup process and ensure that the necessary dependencies are installed and configured correctly.
+#### **`ceddar/` - Core model**
+- Diffusion model implementation (EDM)
+- UNet-based score model (`score_unet.py`)
+- EDM sampler and $\sigma$* control (`score_sampling.py`)
+- Small data utilities (`data/create_train_valid_test.py`, `data/datasets_loading.py`)
+- Training pipeline (`training_main.py`, `training.py`, `training_utils.py`)
+- Generation tools (`generate/`)
+- Evaluation tools (`evaluate/`)
+- Special modules (e.g., RainGate in `heads/`, transformations in `special_transforms.py`)
+- Utilities (`utils.py`, `logging_utils.py`, `scale_utils.py`)
+- Unified controller script in `cli/` controlled through .yaml config files in `configs/`
 
-## data_examples
-Contains example datasets for the ERA5 and DANRA datasets, as well as figures for data comparison, correlations, distributions, and statistics. These examples are used to demonstrate the functionality of the project and provide a reference for users to understand the data formats and structures.
-    - **ERA5**: Contains example data files from the ERA5 dataset, which is used as the low-resolution input for the model.
-    - **DANRA**: Contains example data files from the DANRA dataset, which is used as the high-resolution target for the model.
-    - **figures**: Contains figures generated from the data examples, including raw data examples, data comparisons, data correlations, data distributions, and data statistics. 
+#### **`baselines/`**
+- Bilinear upsampling baseline (`bilinear.py`)
+- Quantile mapping baseline (`quantile_mapping.py`)
+- UNet-SR (WIP) baseline (`unet_sr/`)
+- Baseline evaluation scripts (`baseline_eval.py`, `plotting.py`)
+- Helpers for baseline data handling (`build_dataset.py`, `adapter.py`)
+- Controlled through ´baseline_main.py` and .yaml config files in ceddar/configs/
 
-## models_and_samples
-Contains the trained models and generated samples from the SBGM_DANRA project. This directory is organized into subdirectories for evaluations, generated samples, and trained models.
-    - **evaluations**: Contains evaluation results and metrics for the trained models, including performance metrics and visualizations.
-    - **generated_samples**: Contains samples generated by the trained score-based generative model. These samples are used to assess the quality of the model's downscaling capabilities.
-    - **trained_models**: Contains the trained score-based generative models. These models can be used for generating new samples or for further evaluation and analysis.
+#### **`era5_download_pipeline/`**
+- ERA5 (single-level and pressure-level) data download scripts using CDS API [REFERENCE TO CDS API] (`pipeline/`)
+  - Necessary CDO commands for initial preprocessing (regridding, variable extraction, unit conversions) (`cdo_utils.py`)
+  - ERA5 data request script in `download.py`
+  - Utilities for organizing and managing downloaded data both locally and on HPC storage system (LUMI) (`remote_utils.py`, `utils.py`)
+  - Transfer script for moving data between local and HPC storage (`transfer.py`)
+  - Pipeline setup for streamlined data download and preprocessing (`stream.py`)
+- Controller script in `cli/` controlled through .yaml files in `cfg/`
+- Slurm job scripts for HPC execution in `slurm/`
+- Logging and log utilities in `utils/` and `era5_logs/`
+
+#### **`data_analysis_pipeline/`**
+- Data preprocessing/preparation and filtering scripts (`preprocess/`)
+  - Daily .nc/.npz to .zarr conversion (`daily_files_to_zarr.py`)
+  - Data filtering (`filter_data.py`)
+  - Small dataset creation for testing (`create_small_dataset.py`)
+- Train/valid/test split generation (`splits/`)
+- Dataset comparisons (between variables both in ERA5 and DANRA) (`comparisons/`)
+- Correlation analysis, temporal and spatial, across HR/LR variables (`correlations/`)
+- Statistics computation (`statistics/`)
+- Controller scipts in `cli/`controlled through .yaml files in `configs/`
+
+#### **`data_examples/`**
+- Minimal example of DANRA and ERA5 files (in final .zarr format and raw .nc/.npz formats) for quick testing and debugging
+- Demonstration of model input/output shapes and data structures
+
+#### **`models_and_samples/`**
+- Pretrained CEDDAR model checkpoints (optional, may be empty)
+- Sample generated outputs/evaluations from pretrained models for quick visualization and inspection
+- Organized by experiment/configuration names
+
+#### **`bash_scripts/`**
+- LUMI Slurm examples for training, generation, evaluation, data download 
+
+## 4. Requirements
+
+CEDDAR uses a minimal, platform-agnostic Python environment.
+
+```
+pip install -r requirements.txt
+```
+
+A CPU-only installation works for basic testing. 
+Full training and generation require a CUDA-capable GPU (AMD or NVIDIA) with sufficient VRAM. See `bash_scripts/` for example Slurm scripts for LUMI/HPC setups and container-based workflows.
 
 
-## sbgm
-This directory contains the main code for the SBGM_DANRA project, including scripts for data handling, model training, and evaluation. The code is organized into several subdirectories:
-    - cli: Contains command-line interface scripts for launching the generation and training processes.
-    - config: Contains configuration files for the project, including default settings and parameters for model training and evaluation.
-    - data_scripts: Contains scripts for data preparation, including creating smaller data batches, splitting datasets into training, validation, and test sets, converting daily files to Zarr format, and performing data comparisons and correlations.
-    - evaluation: Contains scripts for evaluating the model performance, including metrics computation and visualization.
-    - __init__.py: Initializes the sbgm package.
 
+## 5. Installation
 
-The main scripts in this directory include:
-    - **data_modules.py**: Contains the data modules used for loading and processing the datasets specifically for model training. It defines the structure and format of the data, as well as any transformations or preprocessing steps that need to be applied before training the model.
-    - **generation.py**: Responsible for generating samples from the trained score-based generative model. It uses the trained model to produce high-resolution climate data conditioned on low-resolution inputs.
-    - **main_sbgm.py**: The main entry point for training the score-based generative model. It orchestrates the training process, including data loading, model initialization, and training loop.
-    - **score_sampling.py**: Responsible for sampling from the trained score-based generative model. It uses the model to generate new samples based on the learned distribution, allowing for the creation of high-resolution climate data.
-    - **score_unet.py**: Contains the implementation of the score-based UNet architecture used in the generative model. This script defines the neural network structure, including the layers and operations that make up the model.
-    - **special_transforms.py**: Contains special transformations that can be applied to the datasets during model training, such as normalization, scaling, or other preprocessing steps. These transformations are used to prepare the data for training the score-based generative model.
-    - **training.py**: Contains the training loop for the score-based generative model. It handles the forward and backward passes, loss computation, and optimization steps to train the model on the provided datasets.
-    - **utils.py**: Contains utility functions that are used throughout the model training scripts, such as file handling, data manipulation, and other common tasks. These functions help to streamline the model training workflow and reduce code duplication.
+CEDDAR is designed to run on both standard local machines (for development and basic testing) and on HPC environments such as **LUMI** for full-scale training and generation.
 
+### 5.1. Clone the Repository
+```bash
+git clone https://github.com/<your-username>/CEDDAR.git
+cd CEDDAR
+```
 
+### 5.2. Python Environment Setup (Local)
 
-### cli
-- Contains command-line interface scripts for launching the generation and training processes. These scripts allow users to run the model training and generation from the command line, providing a user-friendly interface for interacting with the project.
+```bash
+python -m venv .venv
+source .venv/bin/activate   # Linux/macOS
+# .venv\Scripts\activate    # Windows
 
-### config
-- Contains configuration files for the project, including default settings and parameters for model training and evaluation. These files allow users to customize the behavior of the scripts without modifying the code directly, making it easier to adapt the project to different use cases or datasets.
+pip install -r requirements.txt
+```
 
-### Data scripts
-This directory contains scripts for data preparation, including creating smaller data batches, splitting datasets into training, validation, and test sets, converting daily files to Zarr format, and performing data comparisons and correlations. These scripts help to preprocess the data and prepare it for model training and evaluation.
+This installs a minimal CPU-capable environment suitable for:
+- code inspection,
+- running preprocessing scripts,
+- running the evaluation pipeline on stored results,
+- debugging model components.
 
-- **create_small_data_batches.py**: This script is used to create smaller batches of data from larger datasets for easier handling and processing during model training and evaluation.
+GPU acceleration is required for:
+- training,
+- generation,
+- σ\*-controlled sampling,
+- large-scale evaluation.
 
-- **create_train_valid_test_data.py**: This script is responsible for splitting the dataset into training, validation, and test sets. It ensures that the data is properly partitioned for model training and evaluation.
+### 5.3. HPC / LUMI Installation
 
-- **daily_files_to_zarr.py**: This script converts daily downloaded ERA5/DANRA files (.npz or .nc) into the Zarr format, which is a format optimized for large datasets and allows for efficient storage and retrieval of multi-dimensional arrays.
+CEDDAR is typically executed on **LUMI-G** using:
+- a **Singularity/Apptainer container** with ROCm+PyTorch installed, and  
+- Slurm batch submission scripts.
 
-- **data_comparison.py**: Compares the Low Resolution (LR) ERA5 and High Resolution (HR) DANRA datasets to visualise the differences and similarities between the two datasets. This is useful for understanding the characteristics of the data before training the model. 
+The repository includes example scripts in:
 
-- **data_correlations.py**: This script calculates and visualizes the correlations between different variables in the datasets, helping to identify relationships and dependencies that may be important for model training.
+```
+bash_scripts/
+```
 
-- **data_filter.py**: Filters the datasets based on specific criteria, such as date ranges or variable values, to prepare the data for training and evaluation. This is useful for focusing on relevant subsets of the data, or for excluding outliers or irrelevant data points.
+Typical workflow on LUMI:
 
-- **data_stats.py**: This script computes and visualizes statistics of the datasets, such as mean, standard deviation, and distribution of variables. This is useful for understanding the data and identifying any potential issues or anomalies before training the model.
+```bash
+# Load appropriate modules
+module load LUMI/22.12 partition/G
 
-.
-└── Data_DiffMod/
-    ├── data_DANRA/
-    │   └── size_589x789/
-    │       └── prcp_589x789/
-    │           ├── all/
-    │           │   ├── tp_tot_19910101.npz
-    │           │   ├── ...
-    │           │   └── tp_tot_20201231.npz
-    │           └── zarr_files/
-    │               ├── train.zarr/
-    │               │   ├── tp_tot_19910101
-    │               │   ├── ...
-    │               │   └── tp_tot_20151231
-    │               ├── valid.zarr/
-    │               │   ├── tp_tot_20160101
-    │               │   ├── ...
-    │               │   └── tp_tot_20181231
-    │               └── test.zarr/
-    │                   ├── tp_tot_20190101
-    │                   ├── ...
-    │                   └── tp_tot_20201231
-    └── data_ERA5/
-        └── size_589x789/
-            └── prcp_589x789/
-                ├── all/
-                │   ├── tp_589x789_19910101.npz
-                │   ├── ...
-                │   └── tp_589x789_20201231.npz
-                └── zarr_files/
-                    ├── train.zarr/
-                    │   ├── tp_tot_19910101
-                    │   ├── ...
-                    │   └── tp_tot_20151231            
-                    ├── valid.zarr/
-                    │   ├── tp_tot_20160101
-                    │   ├── ...
-                    │   └── tp_tot_20181231            
-                    └── test.zarr/
-                        ├── tp_589x789_20190101
-                        ├── ...
-                        └── tp_589x789_20201231            
+# Build or load container
+bash bash_scripts/build_container.sh
 
-<!-- 
-### evaluation
-- Contains scripts for evaluating the model performance, including metrics computation and visualization. These scripts help to assess the quality of the generated samples and the effectiveness of the model in downscaling climate data.
- -->
+# Run interactive shell
+srun --account=<project> --partition=standard-g --gres=gpu:1 \
+     --container-image=<container_path> bash
+```
 
-<!-- ## model_runs
+Training, generation, and evaluation commands inside the container  
+are identical to local usage (see Section 7).
 
-### data_modules.py
-- Contains the data modules used for loading and processing the datasets specifically for model training. It defines the structure and format of the data, as well as any transformations or preprocessing steps that need to be applied before training the model.
+**Note:**  
+Because LUMI uses AMD MI250X GPUs, PyTorch must be ROCm-compatible.  
+The container handles this automatically.
 
-### generation.py
-- This script is responsible for generating samples from the trained score-based generative model. It uses the trained model to produce high-resolution climate data conditioned on low-resolution inputs.
+---
 
-### launch_generation.py
-- This script is used to launch the generation process, which involves running the generation script with the appropriate parameters and configurations. It sets up the environment and initiates the sample generation from the trained model.
+## 6. Data
 
-### launch_sbgm.py
-- This script is used to launch the training of the score-based generative model (SBGM). It sets up the environment, loads the data, and initiates the training process with the specified parameters and configurations.
+CEDDAR is trained on a combination of:
 
-### main_sbgm.py
-- The main entry point for training the score-based generative model. It orchestrates the training process, including data loading, model initialization, and training loop. This script is typically run to start the model training.
+- **ERA5** (coarse-resolution, ~31 km)
+- **DANRA** (high-resolution reanalysis over Denmark, ~2.5 km)
 
-### score_sampling.py
-- This script is responsible for sampling from the trained score-based generative model. It uses the model to generate new samples based on the learned distribution, allowing for the creation of high-resolution climate data.
+Due to licensing and size constraints, **full datasets are not included**.  
+Instead, small example files are provided in:
 
-### score_unet.py
-- Contains the implementation of the score-based UNet architecture used in the generative model. This script defines the neural network structure, including the layers and operations that make up the model.
+```
+data_examples/
+```
 
-### special_transforms.py
-- Contains special transformations that can be applied to the datasets during model training, such as normalization, scaling, or other preprocessing steps. These transformations are used to prepare the data for training the score-based generative model.
+### 6.1. Required Variables
 
-### test_data_transformations.py
-- This script tests the data transformations applied to the datasets to ensure that they are correctly formatted and ready for model training. It checks for any issues or errors in the data transformation process.
+#### ERA5 variables (typical configuration)
+- Total precipitation (tp)
+- 2m temperature (t2m)
+- Mean sea level pressure (msl)
+- CAPE (cape)
+- Optional: pressure-level variables  
+  (e.g. geopotential, humidity, wind components at 500/700/850 hPa)
 
-### training.py
-- This script contains the training loop for the score-based generative model. It handles the forward and backward passes, loss computation, and optimization steps to train the model on the provided datasets.
+#### DANRA variables
+- Precipitation (`pr`)
+- Temperature (`t2m`) (optional future work)
+- Potential evaporation (`pev`) (optional future work)
 
-### utils.py
-- Contains utility functions that are used throughout the model training scripts, such as file handling, data manipulation, and other common tasks. These functions help to streamline the model training workflow and reduce code duplication.
+### 6.2. File Structure Expected by CEDDAR
 
-## evaluation -->
+CEDDAR expects **Zarr-based datasets**, generated via the preprocessing pipeline:
+
+```
+/path/to/data/
+    ERA5/
+        zarr/
+            prcp_ERA5.zarr/
+            t2m_ERA5.zarr/
+            ...
+    DANRA/
+        zarr/
+            prcp_DANRA.zarr/
+            ...
+    splits/
+        train_dates.txt
+        valid_dates.txt
+        test_dates.txt
+```
+
+The exact folder structure is controlled by YAML config files in:
+
+```
+data_analysis_pipeline/configs/
+```
+
+### 6.3. Preprocessing Workflow
+
+All preprocessing actions are executed through the Data Analysis CLI:
+
+- Convert `.nc` or `.npz` → Zarr  
+- Compute daily aggregates  
+- Filter invalid days  
+- Construct train/valid/test splits  
+- Compute statistics used for normalisation during training  
+- Perform correlation analyses (optional)
+
+A typical preprocessing command is:
+
+```bash
+python -m data_analysis_pipeline.cli.main_data_app \
+    --config data_analysis_pipeline/configs/preprocess_default.yaml \
+    --task preprocess
+```
+
+More examples are provided in `bash_scripts/` and in the config folder.
+
+---
+
+## 7. Usage
+
+CEDDAR follows a configuration-driven design.  
+All workflows (training, generation, evaluation) use YAML config files located in:
+
+```
+ceddar/configs/
+```
+
+Individual experiments are launched through the unified CLI in:
+
+```
+ceddar/cli/
+```
+
+---
+
+### 7.1. Training CEDDAR
+
+A typical training command:
+
+```bash
+python -m ceddar.cli.main_app \
+    --config ceddar/configs/train_prcp_default.yaml \
+    --mode train
+```
+
+This will:
+- load ERA5+HR datasets through the configured data module,
+- build the EDM+UNet architecture specified in the config,
+- start logging and checkpointing,
+- train until convergence.
+
+Logs and checkpoints are saved under:
+
+```
+models_and_samples/
+    <experiment-name>/
+        checkpoints/
+        logs/
+        samples/
+```
+
+---
+
+### 7.2. Generating Downscaled Samples
+
+Generation uses the **same config**, but switches mode:
+
+```bash
+python -m ceddar.cli.main_app \
+    --config ceddar/configs/train_prcp_default.yaml \
+    --mode generate
+```
+
+Or a dedicated generation config:
+
+```bash
+python -m ceddar.cli.main_app \
+    --config ceddar/configs/generate_prcp_default.yaml \
+    --mode generate
+```
+
+Supports:
+- multiple σ\* values (scale-control sweeps),
+- ensemble generation,
+- residual + absolute output modes,
+- optional RainGate correction.
+
+Generated samples are stored in:
+
+```
+models_and_samples/<experiment>/generated/
+```
+
+---
+
+### 7.3. Evaluation Pipeline
+
+Evaluation is fully modular and covers:
+- distributional metrics,
+- extremes (POT/GPD),
+- spatial statistics,
+- power spectra (PSD),
+- correlation and temporal behaviour,
+- visual diagnostics.
+
+Run evaluation:
+
+```bash
+python -m ceddar.cli.main_app \
+    --config ceddar/configs/eval_prcp_default.yaml \
+    --mode evaluate
+```
+
+Each evaluation module writes results into:
+
+```
+models_and_samples/<experiment>/evaluation/
+    metrics/
+    figures/
+    spectra/
+    extremes/
+```
+
+---
+
+### 7.4. Baselines
+
+Baselines are run through:
+
+```bash
+python baselines/baseline_main.py \
+    --config ceddar/configs/baseline_prcp_default.yaml
+```
+
+Produces:
+- bilinear upsampling outputs,
+- quantile-mapped fields,
+- UNet-SR predictions (if enabled),
+- full baseline evaluation suite.
+
+Outputs follow the same directory convention as CEDDAR models.
+
+---## 8. Citation
