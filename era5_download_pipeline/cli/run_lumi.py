@@ -175,7 +175,7 @@ def main():
     args = p.parse_args()
 
     setup_logging(
-        log_dir="/scratch/project_465001695/quistgaa/Code/SBGM_SD/era5_download_pipeline/era5_logs",
+        log_dir="/scratch/project_xxxxxxxxx/user/Code/SBGM_SD/era5_download_pipeline/era5_logs",
         log_file=f"era5_preprocess_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.log",
         level=args.log_level.upper()
     )

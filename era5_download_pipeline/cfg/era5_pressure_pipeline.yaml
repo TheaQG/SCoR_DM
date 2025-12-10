@@ -1,4 +1,6 @@
 # cfg/era5_pipeline.yaml
+# EDIT anywhere with project_xxxxxxxxx to your own project ID
+# EDIT user and key in the lumi section to your own username and ssh key file path
 area: [60, -80, 40, 40]        # N,W,S,E  (edit!)
 dataset: reanalysis-era5-pressure-levels
 format: netcdf
@@ -10,13 +12,13 @@ pressure_levels: [1000, 850, 500, 250]  # Pressure levels in hPa
 years: [1991, 2020]            # inclusive range
 max_workers: 3
 tmp_dir: /tmp/era5_downloads
-grid_file: /scratch/project_465001695/quistgaa/Data/Data_ERA5_tmp/grid/mygrid_danra_small
-weights_file: /scratch/project_465001695/quistgaa/Data/Data_ERA5_tmp/weights/ERA5_to_DANRA_bil_weights_new.nc
-# grid_file: /Users/au728490/OneDrive - Aarhus universitet/PhD_AU/Python_Scripts/Data/mygrid_danra_small
-# weights_file: /Users/au728490/OneDrive - Aarhus universitet/PhD_AU/Python_Scripts/Data/ERA5_to_DANRA_bil_weights_new.nc
+grid_file: /scratch/project_xxxxxxxxx/user/Data/Data_ERA5_tmp/grid/mygrid_danra_small
+weights_file: /scratch/project_xxxxxxxxx/user/Data/Data_ERA5_tmp/weights/ERA5_to_DANRA_bil_weights_new.nc
+# grid_file: CEDDAR/era5_download_pipeline/grid_and_weights/grid/mygrid_danra_small
+# weights_file: CEDDAR/era5_download_pipeline/grid_and_weights/weights/ERA5_to_DANRA_bil_weights_new.nc
 lumi:
-  user:  quistgaa
+  user:  user
   host:  lumi.csc.fi
-  raw_dir:   /scratch/project_465001695/quistgaa/Data/Data_ERA5_tmp/raw/{var}/{plev}
-  daily_dir: /scratch/project_465001695/quistgaa/Data/Data_ERA5_tmp/daily/{var}/        # after daymean
-  npz_dir:   /scratch/project_465001695/quistgaa/Data/Data_ERA5_tmp/npz/{var}/           # final split
+  raw_dir:   /scratch/project_xxxxxxxxx/user/Data/Data_ERA5_tmp/raw/{var}/{plev}
+  daily_dir: /scratch/project_xxxxxxxxx/user/Data/Data_ERA5_tmp/daily/{var}/        # after daymean
+  npz_dir:   /scratch/project_xxxxxxxxx/user/Data/Data_ERA5_tmp/npz/{var}/           # final split

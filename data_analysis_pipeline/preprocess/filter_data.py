@@ -141,7 +141,7 @@ def filter_files_by_date(dataset_name, dataset_path, var_list, valid_dates):
 
 def main():
     # User config
-    base_path = "/scratch/project_465001695/quistgaa/Data/Data_DiffMod"
+    base_path = "/scratch/project_xxxxxxxxx/user/Data/Data_DiffMod"
     era5_path = os.path.join(base_path, "data_ERA5/size_589x789")
     danra_path = os.path.join(base_path, "data_DANRA/size_589x789")
 

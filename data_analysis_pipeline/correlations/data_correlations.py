@@ -206,7 +206,7 @@ if __name__ == '__main__':
         lr_model='ERA5',
         hr_var='prcp',
         lr_vars=['temp', 'prcp'],
-        path_data='/scratch/project_465001695/quistgaa/Data/Data_DiffMod_small/',
+        path_data='/scratch/project_xxxxxxxxx/user/Data/Data_DiffMod_small/',
         save_figs=True
     )
     analyzer.run()

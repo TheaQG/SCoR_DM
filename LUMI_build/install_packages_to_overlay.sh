@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=install_pkgs
-#SBATCH --account=project_465001695
+#SBATCH --account=project_xxxxxxxxx
 #SBATCH --partition=standard
 #SBATCH --time=00:30:00
 #SBATCH --nodes=1
@@ -14,8 +14,8 @@ module use /appl/local/training/modules/AI-20240529/
 module load singularity-userfilesystems singularity-CPEbits
 
 # === Define paths ===
-CONTAINER="/scratch/project_465001695/containers/images/my_torch_container_with_plotting.sif"
-OVERLAY_DIR="/scratch/project_465001695/containers/overlays"
+CONTAINER="/scratch/project_xxxxxxxxx/containers/images/my_torch_container_with_plotting.sif"
+OVERLAY_DIR="/scratch/project_xxxxxxxxx/containers/overlays"
 OVERLAY_IMG="$OVERLAY_DIR/my_overlay.img"
 OVERLAY_SIZE_MB=5000
 

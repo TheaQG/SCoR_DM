@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=era5_preprocess
-#SBATCH --account=project_465001695
+#SBATCH --account=project_xxxxxxxxx
 #SBATCH --partition=standard
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
@@ -14,9 +14,9 @@ module purge
 module use /appl/local/training/modules/AI-20240529/
 module load singularity-userfilesystems singularity-CPEbits
 
-CONTAINER=/scratch/project_465001695/containers/images/my_torch_container_with_plotting.sif
-OVERLAY=/scratch/project_465001695/containers/overlays/my_overlay.img
-HOST_CODE=/scratch/project_465001695/quistgaa/Code/SBGM_SD
+CONTAINER=/scratch/project_xxxxxxxxx/containers/images/my_torch_container_with_plotting.sif
+OVERLAY=/scratch/project_xxxxxxxxx/containers/overlays/my_overlay.img
+HOST_CODE=/scratch/project_xxxxxxxxx/user/Code/SBGM_SD
 
 CFG_IN_WORKSPACE=/workspace/era5_download_pipeline/cfg/era5_pressure_pipeline.yaml
 TS=$(date +%Y%m%d_%H%M%S)
@@ -34,7 +34,7 @@ srun singularity exec \
      --bind "$HOST_CODE:/workspace" \
      "$CONTAINER" \
      bash -eu <<INNER
-MMB=/users/quistgaa/micromamba/bin/micromamba
+MMB=/users/user/micromamba/bin/micromamba
 if [[ ! -x \$MMB ]]; then
     echo "ERROR: micromamba not found at \$MMB" >&2
     exit 1

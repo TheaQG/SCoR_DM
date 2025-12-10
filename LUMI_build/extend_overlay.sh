@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=extend_overlay
-#SBATCH --account=project_465001695
+#SBATCH --account=project_xxxxxxxxx
 #SBATCH --output=err_out/extend_overlay_%j.out
 #SBATCH --error=err_out/extend_overlay_%j.err
 #SBATCH --partition=standard
@@ -13,8 +13,8 @@ module use /appl/local/training/modules/AI-20240529/
 module load singularity-userfilesystems singularity-CPEbits
 
 # -- 1. Paths and variables -------------------------------------------------------
-CONTAINER=/scratch/project_465001695/containers/images/my_torch_container_with_plotting.sif
-OVERLAY_DIR=/scratch/project_465001695/containers/overlays
+CONTAINER=/scratch/project_xxxxxxxxx/containers/images/my_torch_container_with_plotting.sif
+OVERLAY_DIR=/scratch/project_xxxxxxxxx/containers/overlays
 OVERLAY_IMG=$OVERLAY_DIR/my_overlay.img
 OVERLAY_SIZE_MB=5000
 

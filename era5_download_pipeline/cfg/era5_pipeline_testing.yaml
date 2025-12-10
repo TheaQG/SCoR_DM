@@ -1,6 +1,8 @@
 # cfg/era5_pipeline.yaml
 
 # This is a testing configuration for the ERA5 download pipeline, smaller in scope
+# EDIT anywhere with project_xxxxxxxxx to your own project ID
+# EDIT user and key in the lumi section to your own username and ssh key file path
 
 area: [60, -80, 40, 40]        # N,W,S,E  (edit!)
 dataset: reanalysis-era5-single-levels
@@ -30,15 +32,15 @@ variables:
 years: [1993, 1995]            # inclusive range
 max_workers: 2
 tmp_dir: /tmp/era5_downloads
-grid_file: /scratch/project_465001695/quistgaa/Data/Data_ERA5_tmp/grid/mygrid_danra_small
-weights_file: /scratch/project_465001695/quistgaa/Data/Data_ERA5_tmp/weights/ERA5_to_DANRA_bil_weights_new.nc
+grid_file: /scratch/project_xxxxxxxxx/user/Data/Data_ERA5_tmp/grid/mygrid_danra_small
+weights_file: /scratch/project_xxxxxxxxx/user/Data/Data_ERA5_tmp/weights/ERA5_to_DANRA_bil_weights_new.nc
 # grid_file: /Users/au728490/OneDrive - Aarhus universitet/PhD_AU/Python_Scripts/Data/mygrid_danra_small
 # weights_file: /Users/au728490/OneDrive - Aarhus universitet/PhD_AU/Python_Scripts/Data/ERA5_to_DANRA_bil_weights_new.nc
 delete_on_fly: false
 lumi:
-  user:  quistgaa
+  user:  user
   host:  lumi.csc.fi
-  raw_dir:   /scratch/project_465001695/quistgaa/Data/Data_ERA5_tmp/raw/{var}/
-  daily_dir: /scratch/project_465001695/quistgaa/Data/Data_ERA5_tmp/daily/{var}/        # after daymean
-  npz_dir:   /scratch/project_465001695/quistgaa/Data/Data_ERA5_tmp/npz/{var}/           # final split
-  key:  /Users/au728490/.ssh/id_ed25519
+  raw_dir:   /scratch/project_xxxxxxxxx/user/Data/Data_ERA5_tmp/raw/{var}/
+  daily_dir: /scratch/project_xxxxxxxxx/user/Data/Data_ERA5_tmp/daily/{var}/        # after daymean
+  npz_dir:   /scratch/project_xxxxxxxxx/user/Data/Data_ERA5_tmp/npz/{var}/           # final split
+  key:  /path/to/ssh/keyfile    # edit!

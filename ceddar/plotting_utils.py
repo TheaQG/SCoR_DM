@@ -79,7 +79,7 @@ _DK_LSM_CACHE: Dict[Tuple[int, int, int, int], np.ndarray] = {}
 
 def _load_dk_lsm_outline(
     bounds: tuple[int, int, int, int] = (200, 328, 380, 508),
-    base: str = "/scratch/project_465001695/quistgaa/Data/Data_DiffMod",
+    base: str = "/scratch/project_xxxxxxxxx/user/Data/Data_DiffMod",
     rel_path: str = "data_lsm/truth_fullDomain/lsm_full.npz",
     key_candidates: tuple[str, ...] = ("lsm_hr", "lsm", "mask", "roi", "lsm_full", "data", "arr_0"),
 ) -> np.ndarray | None:
