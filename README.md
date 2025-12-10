@@ -273,7 +273,7 @@ CEDDAR expects **Zarr-based datasets**, generated via the preprocessing pipeline
     │           │   ├── tp_589x789_19910101.npz
     │           │   ├── ...
     │           │   └── tp_589x789_20201231.npz
-    │           └── zarr_files/
+    │           └── zarr_files/ (uncompressed)
     │               ├── train.zarr/
     │               │   ├── tp_tot_19910101
     │               │   ├── ...
