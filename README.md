@@ -64,6 +64,7 @@ High-level directory overview:
 .
 ├── baselines/                  # Baseline downscaling methods and evaluations
 ├── bash_scripts/               # Example Slurm/helper scripts (LUMI/HPC)
+├── LUMI_build/                 # LUMI container + overlay setup (YAML envs, Slurm scripts, LUMI requirements)
 ├── ceddar/                     # Core CEDDAR model, training, generation, evaluation code
 ├── data_analysis_pipeline/     # Statistics, comparisons, correlations, preprocessing, splits
 ├── Data_DiffMod_small/         # Tiny example data (ERA5/DANRA)
@@ -127,8 +128,17 @@ High-level directory overview:
 - Sample generated outputs/evaluations from pretrained models for quick visualization and inspection
 - Organized by experiment/configuration names
 
+
 #### **`bash_scripts/`**
-- LUMI Slurm examples for training, generation, evaluation, data download 
+- General Slurm scripts and helper utilities for running training, generation, evaluation, and data download on HPC systems.
+- LUMI-specific container build and overlay scripts live in `LUMI_build/`.
+
+#### **`LUMI_build/`**
+- LUMI-specific environment and container setup:
+  - Conda environment recipes for the ROCm/PyTorch containers (`my_lumi_torch.yml`, `torch_lumi_w_pandas.yml`).
+  - Slurm scripts for building the container image with `cotainr` (`torch_container_build.sh`).
+  - Slurm scripts for creating and extending overlays with additional Python packages and CDO/micromamba environments (`install_packages_to_overlay.sh`, `extend_overlay.sh`).
+  - LUMI-specific Python dependency snapshot in `requirements-lumi.txt`.
 
 ## 4. Requirements
 
@@ -185,20 +195,18 @@ The repository includes example scripts in:
 
 ```
 bash_scripts/
+LUMI_build/
 ```
 
 Typical workflow on LUMI:
 
 ```bash
-# Load appropriate modules
-module load LUMI/22.12 partition/G
+# Load appropriate modules (LUMI AI stack)
+module use /appl/local/training/modules/AI-20240529/
+module load LUMI cotainr singularity-userfilesystems singularity-CPEbits
 
-# Build or load container
-bash bash_scripts/build_container.sh
-
-# Run interactive shell
-srun --account=<project> --partition=standard-g --gres=gpu:1 \
-     --container-image=<container_path> bash
+# Build or load container (see LUMI_build/torch_container_build.sh)
+bash LUMI_build/torch_container_build.sh
 ```
 
 Training, generation, and evaluation commands inside the container  
@@ -498,7 +506,10 @@ To ensure consistent results across runs and environments, CEDDAR incorporates t
 
 
 ### 9.2 Environment snapshots
-For scientific reproducibility, we recommend `requirements.txt` for general (local) setups, and `requirements_lumi.txt` (or container recipe) for exact HPC/LUMI setups.
+For scientific reproducibility, we recommend:
+- `requirements.txt` for general/local Python setups.
+- `LUMI_build/requirements-lumi.txt` plus the container recipes in `LUMI_build/my_lumi_torch.yml` and `LUMI_build/torch_lumi_w_pandas.yml` for exact HPC/LUMI experiments.
+- The Slurm scripts in `LUMI_build/` (`torch_container_build.sh`, `install_packages_to_overlay.sh`, `extend_overlay.sh`) document the full container + overlay setup used in production runs.
 
 ### 9.3 Data-version reproducibility
 

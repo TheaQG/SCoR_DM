@@ -1,0 +1,68 @@
+# ===========================================================================
+# LUMI Python requirements for CEDDAR
+#
+# This file documents the Python-level dependencies used on LUMI.
+# It is NOT a complete description of the system/ROCm stack, which is
+# provided by:
+#   - modules under /appl/local/training/modules/AI-20240529/
+#   - the base container image built from my_lumi_torch.yml and 
+#     torch_lumi_w_pandas.yml
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+# 1. Main ML/container environment
+# Base environment is built via:
+#   cotainr build my_torch_container_with_pandas.sif \
+#       --system=lumi-g \
+#       --conda-env=/scratch/.../torch_lumi_w_pandas.yml
+# 
+# On top of that, inside the overlay, we install a few additional packages.
+# These correspond closely to requirements.txt
+# ---------------------------------------------------------------------------
+
+# Core numeric + scientific stack
+numpy
+scipy
+
+# IO and storage
+zarr
+netCDF4
+
+# PyTorch stack (ROCm build provided by AI-20240529 module + container)
+torch
+torchvision
+
+# Plotting
+matplotlib
+
+# Config/YAML
+omegaconf
+pyyaml
+
+# Progress bars
+tqdm
+
+# Machine learning utilities
+scikit-learn
+
+# Climate data tools
+cdsapi
+
+
+# ---------------------------------------------------------------------------
+# 2. ERA5/CDO micromamba environment (`era5`)
+#
+# Created inside the overlay with:
+#   micromamba create -y -n era5 -c conda-forge python=3.10 cdo netcdf4
+#   micromamba run -n era5 python -m pip install --upgrade pip scikit-learn omegaconf
+# 
+# This encironment is mainly used for ERA5/CDO preprocessing, NOT for 
+# running the main ML experiments.
+# ---------------------------------------------------------------------------
+
+# era5 environment (conda/micromamba)
+python==3.10
+cdo
+netCDF4
+scikit-learn
+omegaconf
