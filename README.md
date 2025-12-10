@@ -6,7 +6,7 @@
 ---
 
 ## 1. Overview
-![alt text](introduction_long.png)
+![alt text](figures/introduction_long.png)
 ### **What is CEDDAR?**
   CEDDAR (Controllable Ensemble Difxfusion Downscaling for Atmospheric Rainfall) is a diffusion-based statistical downscaling framework designed to enhance the spatial resolution of precipitation data - and in the future other climate variables(/full regional climate emulation). 
   It is built on the Elucidated Diffusion Model (EDM) setup and currently targets **precipitation** over Denmark, with ongoing work extending the framework to other variables and regions.
@@ -24,7 +24,7 @@ CEDDAR aims to bridge this resolution gap by learning a generative mapping from 
 - Scale-controllable sampling via $\sigma$* (sigma-star) parameter, allowing control over power spectrum characteristics of generated fields at inference time
 - Ensemble generation for uncertainty quantification, enabling multiple plausible HR realizations for a given LR input
 - Comprehensive evaluation metrics suite covering distributional characteristics, extreme event statistics, spatial metrics, power spectra and temporal behaviour
-![alt text](Dates_final.png)
+![alt text](figures/Dates_final.png)
 
 ## 2. Features
 
@@ -45,7 +45,7 @@ CEDDAR aims to bridge this resolution gap by learning a generative mapping from 
     - [x] Automated evaluation pipeline with visualizations
 
 ### **Data and (pre)processing pipelines**
-![alt text](preprocessing_pipeline.png)
+![alt text](figures/preprocessing_pipeline.png)
     - [x] ERA5 and DANRA preprocessing scripts (CDO-based)
     - [x] Daily .nc/.npz -> .zarr conversion
     - [x] Train/valid/test split creation
