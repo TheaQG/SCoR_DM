@@ -66,7 +66,7 @@ High-level directory overview:
 ├── bash_scripts/               # Example Slurm/helper scripts (LUMI/HPC)
 ├── ceddar/                     # Core CEDDAR model, training, generation, evaluation code
 ├── data_analysis_pipeline/     # Statistics, comparisons, correlations, preprocessing, splits
-├── data_examples/              # Tiny example data (ERA5/DANRA)
+├── Data_DiffMod_small/         # Tiny example data (ERA5/DANRA)
 ├── era5_download_pipeline/     # ERA5 data download + CDO-based preprocessing
 ├── models_and_samples/         # Pretrained models, sample outputs (optional, may be empty)
 ├── notebooks/                  # Jupyter notebooks for exploratory analysis
@@ -118,7 +118,7 @@ High-level directory overview:
 - Statistics computation (`statistics/`)
 - Controller scipts in `cli/`controlled through .yaml files in `configs/`
 
-#### **`data_examples/`**
+#### **`Data_DiffMod_small/`**
 - Minimal example of DANRA and ERA5 files (in final .zarr format and raw .nc/.npz formats) for quick testing and debugging
 - Demonstration of model input/output shapes and data structures
 
@@ -221,7 +221,7 @@ Due to licensing and size constraints, **full datasets are not included**.
 Instead, small example files are provided in:
 
 ```
-data_examples/
+Data_DiffMod_small/
 ```
 
 ### 6.1. Required Variables
@@ -245,7 +245,7 @@ CEDDAR expects **Zarr-based datasets**, generated via the preprocessing pipeline
 
 ```
 .
-└── data_examples/
+└── Data_DiffMod_small/
     ├── data_DANRA/
     │   └── size_589x789/
     │       └── prcp_589x789/
@@ -266,26 +266,36 @@ CEDDAR expects **Zarr-based datasets**, generated via the preprocessing pipeline
     │                   ├── tp_tot_20190101
     │                   ├── ...
     │                   └── tp_tot_20201231
-    └── data_ERA5/
-        └── size_589x789/
-            └── prcp_589x789/
-                ├── all/
-                │   ├── tp_589x789_19910101.npz
-                │   ├── ...
-                │   └── tp_589x789_20201231.npz
-                └── zarr_files/
-                    ├── train.zarr/
-                    │   ├── tp_tot_19910101
-                    │   ├── ...
-                    │   └── tp_tot_20151231            
-                    ├── valid.zarr/
-                    │   ├── tp_tot_20160101
-                    │   ├── ...
-                    │   └── tp_tot_20181231            
-                    └── test.zarr/
-                        ├── tp_589x789_20190101
-                        ├── ...
-                        └── tp_589x789_20201231        
+    ├── data_ERA5/
+    │   └── size_589x789/
+    │       └── prcp_589x789/
+    │           ├── all/
+    │           │   ├── tp_589x789_19910101.npz
+    │           │   ├── ...
+    │           │   └── tp_589x789_20201231.npz
+    │           └── zarr_files/
+    │               ├── train.zarr/
+    │               │   ├── tp_tot_19910101
+    │               │   ├── ...
+    │               │   └── tp_tot_20151231
+    │               ├── valid.zarr/
+    │               │   ├── tp_tot_20160101
+    │               │   ├── ...
+    │               │   └── tp_tot_20181231
+    │               └── test.zarr/
+    │                   ├── tp_589x789_20190101
+    │                   ├── ...
+    │                   └── tp_589x789_20201231
+    ├── data_lsm/
+    │   ├── truth_DK/
+    │   │   └── lsm_dk.npz/
+    │   └── truth_fullDomain/
+    │       └── lsm_full.npz/
+    └── data_topo/
+        ├── truth_DK/
+        │   └── topo_dk.npz/
+        └── truth_fullDomain/
+            └── topo_full.npz/
 ```
 
 The exact folder structure is controlled by YAML config files in:
